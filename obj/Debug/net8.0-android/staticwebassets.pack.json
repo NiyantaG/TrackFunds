@@ -1,0 +1,45 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\itsma\\source\\repos\\FinanceManager\\FinanceManager\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\FinanceManager.styles.css",
+      "PackagePath": "staticwebassets\\FinanceManager.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\itsma\\source\\repos\\FinanceManager\\FinanceManager\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\itsma\\source\\repos\\FinanceManager\\FinanceManager\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\itsma\\source\\repos\\FinanceManager\\FinanceManager\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\itsma\\source\\repos\\FinanceManager\\FinanceManager\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\itsma\\source\\repos\\FinanceManager\\FinanceManager\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-android\\staticwebassets\\msbuild.FinanceManager.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-android\\staticwebassets\\msbuild.build.FinanceManager.props",
+      "PackagePath": "build\\FinanceManager.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-android\\staticwebassets\\msbuild.buildMultiTargeting.FinanceManager.props",
+      "PackagePath": "buildMultiTargeting\\FinanceManager.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-android\\staticwebassets\\msbuild.buildTransitive.FinanceManager.props",
+      "PackagePath": "buildTransitive\\FinanceManager.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

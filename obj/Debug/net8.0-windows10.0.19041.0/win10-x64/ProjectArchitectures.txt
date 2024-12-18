@@ -1,0 +1,1 @@
+C:\Users\itsma\source\repos\FinanceManager\FinanceManager\FinanceManager.csproj;x64
