@@ -1,0 +1,70 @@
+﻿@page "/debt"
+
+<nav class="navbar navbar-light justify-content-between">
+    <h1 class="navbar-brand mb-0 h1 fw-bold" style=" background: #7942CE;
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;">
+        Debts
+    </h1>
+</nav>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="align-baseline"><div>Tag</div></th>
+            <th class="align-baseline"><div>Amount</div></th>
+            <th class="align-baseline"><div>Created Date</div></th>
+            <th class="align-baseline"><div>Debt Due Date</div></th>
+            <th class="align-baseline"><div>Debt Source</div></th>
+            <th class="align-baseline"><div>Debt Status</div></th>
+            <th class="align-baseline"><div>Note</div></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            IEnumerable<Transaction> transactionList = _transactions;
+            transactionList = transactionList.OrderByDescending(t =>
+            t.Date);
+
+            foreach (var transaction in transactionList)
+            {
+                <tr>
+                    <td>@transaction.Tag</td>
+                    <td>@transaction.Amount</td>
+                    <td>@transaction.Date</td>
+                    <td>@transaction.DebtDueDate</td>
+                    <td>@transaction.DebtSource</td>
+                    <td>
+                        <span style="
+                                        width: fit-content;
+                                        padding: 3px 4px;
+                                        border-radius: 5px;
+                                        font-size: 11px;
+                                        font-weight: bold;
+                                        color: white;
+                                        background: @(transaction.DebtStatus == DebtStatus.Paid ? "green": "red")
+                            ">
+                            @transaction.DebtStatus
+                        </span>
+                    </td>
+                    <td>@transaction.Note</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    @code {
+        [CascadingParameter]
+        private GlobalState _globalState { get; set; }
+        private double _debtAmount { get; set; }
+        private List<Transaction> _transactions { get; set; }
+
+        protected override void OnInitialized()
+        {
+            _transactions = TransactionService.GetTransactionType(_globalState.CurrentUser.Id, TransactionType.Debt);
+        }
+
+    }
+}
