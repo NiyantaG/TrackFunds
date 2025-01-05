@@ -1,0 +1,44 @@
+﻿<div class="modal fade show d-flex justify-content-center align-items-center" style=" display:block; background-color: rgba(10,10,10,.8);"
+     role="dialog">
+    <div class="modal-dialog" style="width:499px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-bold" style=" background: #7942CE;
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;">
+                    @Title
+                </h4>
+            </div>
+            <div class="modal-body d-flex flex-column gap-3">
+                @ChildContent
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" @onclick="@ModalCancel">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick=@ModalOk>@OkLabel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string OkLabel { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+}

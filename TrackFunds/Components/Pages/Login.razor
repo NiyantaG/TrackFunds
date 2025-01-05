@@ -1,0 +1,75 @@
+﻿@page "/login"
+@inject NavigationManager NavManager
+
+<div class="main-container">
+    <div class="form-login">
+        <form class="text-center" @onsubmit="LoginHandler">
+            <img class="mb-4" src="/appicon.png" alt="" >
+            <h1 class="h3 mb-3 fw-bold" style=" background: #7942CE;
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;">
+                Login
+            </h1>
+
+            <div class="form-floating">
+                <input type="text" class="form-control username" @bind="_username" placeholder="Username" />
+                <label for="floatingInput">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
+                <label for="floatingPassword">Password</label>
+            </div>
+            <div class="mb-3">
+                <label for="moneyPreferences">Money Preference</label>
+                <select class="form-select" aria-label="moneyPreferences" @bind="_moneyPreference">
+                    <option value="@MoneyPreference.Rupees">Rupees</option>                       
+                    <option value="@MoneyPreference.Dollar">USD</option>                       
+                    <option value="@MoneyPreference.Pound">Pound</option>                       
+                </select>
+            </div>
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <AlertMessage Type="danger" Message="@_errorMessage" />
+            }
+            <button class="w-100 btn btn-lg btn-primary" type="submit">
+                <span class="oi oi-account-login" style="margin-right:10px;"></span> Login
+            </button>
+        </form>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private GlobalState _globalState { get; set; }
+    private bool _showDefaultCredentials { get; set; }
+    private string _username { get; set; }
+    private string _password { get; set; }
+    private MoneyPreference _moneyPreference { get; set; }
+    private string _errorMessage = "";
+
+    protected override void OnInitialized()
+    {                    
+        _globalState.CurrentUser = null;     
+   
+        _errorMessage = "";
+    }
+
+    private void LoginHandler()
+    {
+        try
+        {
+            _errorMessage = "";
+            _globalState.CurrentUser = UsersService.Login(_username, _password, _moneyPreference);
+            if (_globalState.CurrentUser != null)
+            {
+                NavManager.NavigateTo("/dashboard");
+            }
+        }
+        catch (Exception e)
+        {
+            _errorMessage = e.Message;
+            Console.WriteLine(e);
+        }
+    }
+
+}

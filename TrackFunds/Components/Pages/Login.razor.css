@@ -1,0 +1,47 @@
+﻿.main-container {
+    background: linear-gradient(180deg,  #7942CE, #2f1854);
+    width: 1210px;
+    height: 703px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-body {
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    height: calc(100vh - 150px);
+}
+
+.form-login {   
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
+    background: #FFF;
+    border-radius: 10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .form-login .form-floating:focus-within {
+        z-index: 2;
+    }
+
+    .form-login .username {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .form-login .password {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }

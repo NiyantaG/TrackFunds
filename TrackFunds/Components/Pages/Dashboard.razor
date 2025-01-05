@@ -1,0 +1,150 @@
+﻿@page "/dashboard"
+
+<nav class="navbar navbar-light justify-content-between">
+    <h1 class="navbar-brand mb-0 h1 fw-bold" style="background: #7942CE;
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;">
+        Dashboard
+    </h1>
+</nav>
+
+<section class="d-flex flex-wrap gap-4 justify-content-center mt-4">
+    <!-- Balance Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-primary">Current Balance</div>
+            <div class="card-text">
+                <h1>@_globalState.CurrentUser.BalanceAmount</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Income Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-success">Total Income</div>
+            <div class="card-text">
+                <h1>@_totalIncome</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expense Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-danger">Total Expense</div>
+            <div class="card-text">
+                <h1>@_totalExpense</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debt Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-warning">Pending Debt</div>
+            <div class="card-text">
+                <h1>@_debtAmount</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Transactions Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-info">Total Transactions</div>
+            <div class="card-text">
+                <h1>@_totalTransactions</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Highest Income Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-success">Highest Income</div>
+            <div class="card-text">
+                <h1>@_highestIncome</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lowest Income Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-secondary">Lowest Income</div>
+            <div class="card-text">
+                <h1>@_lowestIncome</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Highest Expense Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-danger">Highest Expense</div>
+            <div class="card-text">
+                <h1>@_highestExpense</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lowest Expense Card -->
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-dark">Lowest Expense</div>
+            <div class="card-text">
+                <h1>@_lowestExpense</h1>
+            </div>
+        </div>
+    </div>
+
+    @* <!-- Highest Debt Card --> *@
+    @* <div class="card text-center shadow-sm" style="width: 16rem;"> *@
+    @*     <div class="card-body"> *@
+    @*         <div class="card-title fw-bold text-warning">Highest Debt</div> *@
+    @*         <div class="card-text"> *@
+    @*             <h1>@_highestDebt</h1> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </div> *@
+
+    @* <!-- Lowest Debt Card --> *@
+    @* <div class="card text-center shadow-sm" style="width: 16rem;"> *@
+    @*     <div class="card-body"> *@
+    @*         <div class="card-title fw-bold text-muted">Lowest Debt</div> *@
+    @*         <div class="card-text"> *@
+    @*             <h1>@_lowestDebt</h1> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </div> *@
+</section>
+
+@code {
+    [CascadingParameter]
+    private GlobalState _globalState { get; set; }
+    private double _debtAmount { get; set; }
+    private double _totalIncome { get; set; }
+    private double _totalExpense { get; set; }
+    private int _totalTransactions { get; set; }
+    private double _highestIncome { get; set; }
+    private double _highestExpense { get; set; }
+    private double _highestDebt { get; set; }
+    private double _lowestIncome { get; set; }
+    private double _lowestExpense { get; set; }
+    private double _lowestDebt { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _totalIncome = TransactionService.GetTotalIncome(_globalState.CurrentUser.Id);
+        _totalExpense = TransactionService.GetTotalExpense(_globalState.CurrentUser.Id);
+        _debtAmount = TransactionService.GetTotalPendingDebtAmount(_globalState.CurrentUser.Id);
+        _totalTransactions = TransactionService.GetTotalTransactionsCount(_globalState.CurrentUser.Id);
+        _highestIncome = TransactionService.GetHighestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Credit);
+        _lowestIncome = TransactionService.GetLowestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Credit);
+        _highestExpense = TransactionService.GetHighestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debit);
+        _lowestExpense = TransactionService.GetLowestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debit);
+        // _highestDebt = TransactionService.GetHighestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debt) ;
+        // _lowestDebt = TransactionService.GetLowestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debt);
+    }
+}
