@@ -29,7 +29,6 @@ namespace TrackFunds.Data.Services
             {
                 return new List<User>();
             }
-
             var json = File.ReadAllText(appUsersFilePath);
 
             return JsonSerializer.Deserialize<List<User>>(json);
@@ -38,17 +37,19 @@ namespace TrackFunds.Data.Services
         public static User Login(string username, string password, MoneyPreference moneyPreference)
         {
             List<User> users = GetAll();
+            var loginnullmessage = "Please fill up the details.";
             var user = users.FirstOrDefault(x => x.Username == username.Trim());
 
-            if (user == null)
+            if (user == null )
             {
+             
                 users.Add(
-                    user = new User
-                    {
-                        Username = username.Trim(),
-                        Password = password,
-                        MoneyPreference = moneyPreference,
-                    }
+                user = new User
+                {
+                    Username = username.Trim(),
+                    Password = password,
+                    MoneyPreference = moneyPreference,
+                }
                 );
                 SaveAll(users);
             }
@@ -62,6 +63,20 @@ namespace TrackFunds.Data.Services
                 }
             }
             return user;
+        }
+
+
+        public static string GetCurrency(Guid userId)
+        {
+            List<User> users = GetAll();
+            var user = users.FirstOrDefault(x => x.Id == userId);
+            return user.MoneyPreference switch
+            {
+                MoneyPreference.Dollar => "$",
+                MoneyPreference.Rupees => "Rs",
+                MoneyPreference.Pound => "£",
+                _ => "Rs",
+            };
         }
     }
 }

@@ -1,27 +1,28 @@
 ﻿@page "/login"
 @inject NavigationManager NavManager
 
-<div class="main-container">
-    <div class="form-login">
-        <form class="text-center" @onsubmit="LoginHandler">
+<div class="main-container" style="background:#7942CE ">
+    <div class="form-login" style="background:#7942CE ">
+        <form class="text-center" style="background:#7942CE " @onsubmit="LoginHandler">
             <img class="mb-4" src="/appicon.png" alt="" >
-            <h1 class="h3 mb-3 fw-bold" style=" background: #7942CE;
-        -webkit-text-fill-color: transparent;
+            <h1 class="h3 mb-3 fw-bold" style=" background:#7942CE;
+        -webkit-text-fill-color: black;
         -webkit-background-clip: text;">
-                Login
+                TRACKFUNDS
+                @* #7942CE *@
             </h1>
 
             <div class="form-floating">
-                <input type="text" class="form-control username" @bind="_username" placeholder="Username" />
+                <input type="text" class="form-control username" style="background:#7942CE " @bind="_username" placeholder="Username" />
                 <label for="floatingInput">Username</label>
             </div>
-            <div class="form-floating mb-3">
-                <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
+            <div class="form-floating mb-3" >
+                <input type="password" class="form-control password" style="background:#7942CE " @bind="_password" placeholder="Password" />
                 <label for="floatingPassword">Password</label>
             </div>
-            <div class="mb-3">
+            <div class="mb-3" >
                 <label for="moneyPreferences">Money Preference</label>
-                <select class="form-select" aria-label="moneyPreferences" @bind="_moneyPreference">
+                <select class="form-select"   aria-label="moneyPreferences" @bind="_moneyPreference">
                     <option value="@MoneyPreference.Rupees">Rupees</option>                       
                     <option value="@MoneyPreference.Dollar">USD</option>                       
                     <option value="@MoneyPreference.Pound">Pound</option>                       
@@ -31,8 +32,11 @@
             {
                 <AlertMessage Type="danger" Message="@_errorMessage" />
             }
-            <button class="w-100 btn btn-lg btn-primary" type="submit">
-                <span class="oi oi-account-login" style="margin-right:10px;"></span> Login
+            <button class="w-100 btn btn-lg btn-primary" style="background:#ffffff " type="submit">
+                <span class="oi oi-account-login" style="margin-right:10px;
+                      -webkit-text-fill-color: black
+                      ;"> Login
+                  </span> 
             </button>
         </form>
     </div>
@@ -45,7 +49,7 @@
     private string _username { get; set; }
     private string _password { get; set; }
     private MoneyPreference _moneyPreference { get; set; }
-    private string _errorMessage = "";
+    private string _errorMessage = "Please fill up the fields";
 
     protected override void OnInitialized()
     {                    

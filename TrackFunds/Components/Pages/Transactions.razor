@@ -1,4 +1,5 @@
 ﻿@page "/transactions"
+<!-- HTML and CSS Part of Transaction Page-->
 
 <nav class="navbar navbar-light justify-content-between">
     <h1 class="navbar-brand mb-0 h1 fw-bold" style=" background: #7942CE;
@@ -6,54 +7,90 @@
         -webkit-background-clip: text;">
         Transactions
     </h1>
-    <button class="btn btn-primary" type="button" @onclick="OpenAddTransactionDialog">
-        Add transaction
-    </button>
+    <!--Making Buttons for filters, search, add Transaction and Excel-->
+    <div class="d-flex gap-3">
+        <div class="form-floating">
+            <input id="search" type="text" class="form-control" @bind="_searchTearm" placeholder="Tag" required />
+            <label for="search">Search</label>
+        </div>
+        <button class="btn btn-primary" type="button" @onclick="OnSearch">
+            Search
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" type="button" @onclick="OnResetFilters">
+            Reset
+        </button>
+        <button class="btn btn-secondary" type="button" @onclick="OpenShowFilterDialog">
+            Filters
+        </button>
+        <button class="bg-black-500 text-white px-4 py-2 rounded flex items-center gap-2" type="button" @onclick="ExportToExcel">
+            <i class="fas fa-file-excel"></i> Export 
+        </button>
+        <button class="btn btn-primary" type="button" @onclick="OpenAddTransactionDialog">
+            Add transaction
+        </button>
+    </div>
 </nav>
-
+<!--Making Current balance and Debt Amount visible at the top of the transcation page-->
 <div class="d-flex gap-5">
-    <h5> Balance: @_globalState.CurrentUser.BalanceAmount</h5>
-    <h5> Debt: @_debtAmount</h5>
+    <h5> Balance: @_curr @_globalState.CurrentUser.BalanceAmount</h5>
+    <h5> Debt: @_curr @_debtAmount</h5>
 </div>
-
+<!--making transaction table-->
 <table class="table">
     <thead>
-        <tr>                
+        <tr>
             <th class="align-baseline"><div>Type</div></th>
             <th class="align-baseline"><div>Tag</div></th>
             <th class="align-baseline"><div>Amount</div></th>
-            <th class="align-baseline"><div>Date</div></th>
+            <th class="align-baseline">
+                <div>
+                    Date
+                    <a class='btn text-@(_sortBy == "date" ? "primary" : "secondary")' data-mdb-toggle="tooltip" @onclick='()=>SortByHandler("date")'>
+                        <span class='oi oi-sort-@(_sortBy == "date" ? _sortDirection : "ascending")' />
+                    </a>
+                </div>
+            </th>
             <th class="align-baseline"><div>Note</div></th>
         </tr>
     </thead>
     <tbody>
         @{
             IEnumerable<Transaction> transactionList = _transactions;
-            transactionList = transactionList.OrderByDescending(t =>
-            t.Date);
 
-            foreach(var transaction in transactionList)
+            if (_sortBy == "date")
             {
-				<tr>
-					<td>
-                    <span style="
-                                    width: fit-content;
-                                    padding: 3px 4px;
-                                    border-radius: 5px;
-                                    font-size: 11px;
-                                    font-weight: bold;
-                                    color: white;
-                                    background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
-                    " >
-                    @transaction.Type
-                    </span>
+                transactionList = _sortDirection == "ascending" ? transactionList.OrderBy(t => t.Date) : transactionList.OrderByDescending(t =>
+                t.Date);
+            }
+            else if (_sortBy == "amount")
+            {
+
+            }
+
+            foreach (var transaction in transactionList)
+            {
+                <tr>
+                    <td>
+                        <span style="
+                                        width: fit-content;
+                                        padding: 3px 4px;
+                                        border-radius: 5px;
+                                        font-size: 11px;
+                                        font-weight: bold;
+                                        color: white;
+                                        background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
+                        ">
+                            @transaction.Type
+                        </span>
                     </td>
-					<td>@transaction.Tag</td>
-					<td>@transaction.Amount</td>
-					<td>@transaction.Date</td>
-					<td>@transaction.Note</td>
-				</tr>
-			}
+                    <td>@transaction.Tag</td>
+                    <td>@_curr @transaction.Amount</td>
+                    <td>@transaction.Date</td>
+                    <td>@transaction.Note</td>
+                </tr>
+            }
         }
     </tbody>
 </table>
@@ -64,12 +101,12 @@
         <div>
             <label for="transactionType">Type*</label>
             <select class="form-select" aria-label="transactionType" @bind="_transactionModel.Type" required>
-                   <option value="@TransactionType.Credit">Credit</option>
-                   <option value="@TransactionType.Debit">Debit</option>
-                    <option value="@TransactionType.Debt">Debt</option>
+                <option value="@TransactionType.Credit">Credit</option>
+                <option value="@TransactionType.Debit">Debit</option>
+                <option value="@TransactionType.Debt">Debt</option>
             </select>
         </div>
-        
+
         <div class="form-floating">
             <input id="amount" type="number" class="form-control" @bind="_transactionModel.Amount" placeholder="Amount" required />
             <label for="amount">Amount*</label>
@@ -79,7 +116,7 @@
             <input id="tag" type="text" class="form-control" @bind="_transactionModel.Tag" placeholder="Tag" required />
             <label for="tag">Tag*</label>
         </div>
-        
+
         @if (_transactionModel.Type == TransactionType.Debt)
         {
             <div class="form-floating">
@@ -104,6 +141,23 @@
     </ModalDialog>
 }
 
+@if (_showFiltersDialog)
+{
+    <ModalDialog Title="@_dialogTitle" OnClose="@OnShowFilterDialogClose" OkLabel="@_dialogOkLabel">
+        <div>
+            <label for="dateRange">Date Range</label>
+            <div class="form-floating">
+                <input id="dateFrom" type="date" class="form-control" @bind="_dateFrom" placeholder="Date From" min="2018-01-01" />
+                <label for="dateFrom">Date From</label>
+            </div>
+            <div class="form-floating">
+                <input id="dateTo" type="date" class="form-control" @bind="_dateTo" placeholder="Date To" min="2018-01-01" />
+                <label for="dateTo">Date To</label>
+            </div>
+        </div>
+    </ModalDialog>
+}
+
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
@@ -114,10 +168,31 @@
     private double _debtAmount { get; set; }
     private Transaction _transactionModel { get; set; }
     private List<Transaction> _transactions { get; set; }
+    private string _curr { get; set; }
+    private string _sortBy = "date";
+    private bool _showFiltersDialog { get; set; }
+    private string _sortDirection = "descending";
+    private DateTime _dateFrom = DateTime.Now;
+    private DateTime _dateTo = DateTime.Now;
+    private string _searchTearm { get; set; }
 
     protected override void OnInitialized()
     {
         _transactions = TransactionService.GetAll(_globalState.CurrentUser.Id);
+        _curr = UsersService.GetCurrency(_globalState.CurrentUser.Id);
+    }
+
+    private void SortByHandler(string sortByName)
+    {
+        if (_sortBy == sortByName)
+        {
+            _sortDirection = _sortDirection == "ascending" ? "descending" : "ascending";
+        }
+        else
+        {
+            _sortBy = sortByName;
+            _sortDirection = "ascending";
+        }
     }
 
     private void OpenAddTransactionDialog()
@@ -140,7 +215,7 @@
         {
             try
             {
-                var result  = TransactionService.Create(_globalState.CurrentUser.Id, _transactionModel.Amount, _transactionModel.Type, _transactionModel.Note, _transactionModel.Tag, _transactionModel.DebtSource, _transactionModel.DebtDueDate);
+                var result = TransactionService.Create(_globalState.CurrentUser.Id, _transactionModel.Amount, _transactionModel.Type, _transactionModel.Note, _transactionModel.Tag, _transactionModel.DebtSource, _transactionModel.DebtDueDate);
                 _transactions = result.Item1;
                 _globalState.CurrentUser = result.Item2;
                 _debtAmount = TransactionService.GetTotalPendingDebtAmount(_globalState.CurrentUser.Id);
@@ -152,4 +227,58 @@
             }
         }
     }
+
+    private void OpenShowFilterDialog()
+    {
+        _dialogTitle = "Filters";
+        _dialogOkLabel = "Filter";
+        _showFiltersDialog = true;
+    }
+
+    private void OnShowFilterDialogClose(bool isCancel)
+    {
+        if (isCancel)
+        {
+            _showFiltersDialog = false;
+        }
+        else
+        {
+            if (_dateFrom > _dateTo)
+            {
+                _addTransactionErrorMessage = "Date From cannot be greater than Date To";
+            }
+            else
+            {
+                _transactions = TransactionService.GetFilteredTransactions(_globalState.CurrentUser.Id, _dateFrom, _dateTo);
+                _showFiltersDialog = false;
+            }
+        }
+    }
+
+    private void OnResetFilters()
+    {
+        _dialogTitle = null;
+        _dialogOkLabel = null;
+        _transactions = TransactionService.GetAll(_globalState.CurrentUser.Id);
+        _searchTearm = null;
+    }
+
+    private void OnSearch()
+    {
+        _transactions = TransactionService.Search(_globalState.CurrentUser.Id, _searchTearm);
+    }
+
+    private void ExportToExcel()
+    {
+        _transactions = TransactionService.GetAll(_globalState.CurrentUser.Id);
+    }
+
+
+
+
+    
 }
+
+
+
+

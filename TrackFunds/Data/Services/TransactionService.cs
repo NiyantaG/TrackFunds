@@ -1,4 +1,7 @@
 ﻿using System.Text.Json;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.JSInterop;
 using TrackFunds.Data.Enums;
 using TrackFunds.Data.Models;
 
@@ -42,7 +45,7 @@ namespace TrackFunds.Data.Services
             {
                 throw new Exception("User not found.");
             }
-            
+
             if (type == TransactionType.Debit)
             {
                 if (user.BalanceAmount < amount)
@@ -59,7 +62,7 @@ namespace TrackFunds.Data.Services
                 Tag = tag,
                 UserId = userId,
                 DebtSource = debtSource,
-                DebtDueDate = debtDueDate ,
+                DebtDueDate = debtDueDate,
                 DebtStatus = type == TransactionType.Debt ? DebtStatus.Pending : null
             });
 
@@ -90,13 +93,13 @@ namespace TrackFunds.Data.Services
             return (transactions, user).ToTuple();
         }
 
-        public static List<Transaction> GetTransactionType (Guid userId, TransactionType type)
+        public static List<Transaction> GetTransactionType(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
             return transactions.Where(x => x.Type == type).ToList();
         }
 
-        public static Tuple<List<Transaction>, User> ClearDebt (Guid userId, Guid debtId)
+        public static Tuple<List<Transaction>, User> ClearDebt(Guid userId, Guid debtId)
         {
             try
             {
@@ -150,24 +153,107 @@ namespace TrackFunds.Data.Services
         }
 
         public static int GetTotalTransactionsCount(Guid userId)
-        { 
+        {
             List<Transaction> transactions = GetAll(userId);
             return transactions.Count;
         }
-
         public static double GetHighestTransactionAmount(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
-            var maxTranscation= transactions.Where(x => x.Type == type).Max(x => x.Amount);
-            return maxTranscation > 0 ? maxTranscation : 0.0;
+
+            // Filter transactions by type
+            var filteredTransactions = transactions.Where(x => x.Type == type).ToList();
+
+            // Check if there are any transactions of the specified type
+            if (filteredTransactions.Any())
+            {
+                // Return the maximum amount
+                return filteredTransactions.Max(x => x.Amount);
+            }
+            else
+            {
+                // Return 0.0 if no transactions of the specified type
+                return 0.0;
+            }
         }
         public static double GetLowestTransactionAmount(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
-            var minTranscation = transactions.Where(x => x.Type == type).Min(x => x.Amount);
-            return minTranscation > 0 ? minTranscation : 0.0;
+
+            // Filter transactions by type
+            var filteredTransactions = transactions.Where(x => x.Type == type).ToList();
+
+            // Check if there are any transactions of the specified type
+            if (filteredTransactions.Any())
+            {
+                // Return the minimum amount
+                return filteredTransactions.Min(x => x.Amount);
+            }
+            else
+            {
+                // Return 0.0 if no transactions of the specified type
+                return 0.0;
+            }
         }
 
 
+
+        public static List<Transaction> GetFilteredTransactions(Guid userId, DateTime startDate, DateTime endDate)
+        {
+            List<Transaction> transactions = GetAll(userId);
+            var filteredTransactions = new List<Transaction>();
+            if (startDate == endDate)
+            {
+                filteredTransactions = transactions.Where(x => x.Date == startDate).ToList();
+            }
+            else
+            {
+                filteredTransactions = transactions.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
+            }
+
+            return filteredTransactions;
+        }
+
+        public static List<Transaction> Search(Guid userId, string searchQuery)
+        {
+            List<Transaction> transactions = GetAll(userId);
+            if (string.IsNullOrEmpty(searchQuery))
+            {
+                return transactions;
+            }
+
+            try
+            {
+                var search = transactions
+                    .Where(x => x.Tag != null && x.Tag.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                return search;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("No transactions found.", ex);
+            }
+        }
+
+        public static List<Transaction> GetPendingDebtList(Guid userId, TransactionType type)
+        {
+            List<Transaction> transactions = GetAll(userId);
+
+            
+
+            var pendingDebts = GetTransactionType(userId, TransactionType.Debt).Where(x => x.DebtStatus == DebtStatus.Pending).ToList(); ;
+            if (pendingDebts.Count != 0)
+            {
+                return pendingDebts;
+
+
+            }
+            else
+            {
+                return [];
+            }
+
+        }
     }
+
 }

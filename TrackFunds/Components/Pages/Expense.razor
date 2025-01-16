@@ -41,12 +41,15 @@
         [CascadingParameter]
         private GlobalState _globalState { get; set; }
         private double _debtAmount { get; set; }
+        private string _curr { get; set; }
         private List<Transaction> _transactions { get; set; }
 
         protected override void OnInitialized()
         {
             _transactions = TransactionService.GetTransactionType(_globalState.CurrentUser.Id, TransactionType.Debit);
+            _curr = UsersService.GetCurrency(_globalState.CurrentUser.Id);
         }
+     
 
     }
 }

@@ -43,7 +43,7 @@
                                         font-weight: bold;
                                         color: white;
                                         background: @(transaction.DebtStatus == DebtStatus.Paid ? "green": "red")
-                            ">
+                        ">
                             @transaction.DebtStatus
                         </span>
                     </td>
@@ -60,11 +60,15 @@
         private GlobalState _globalState { get; set; }
         private double _debtAmount { get; set; }
         private List<Transaction> _transactions { get; set; }
+        private string _curr { get; set; }
 
         protected override void OnInitialized()
         {
             _transactions = TransactionService.GetTransactionType(_globalState.CurrentUser.Id, TransactionType.Debt);
+            _curr = UsersService.GetCurrency(_globalState.CurrentUser.Id);
         }
 
+        
+       
     }
 }
