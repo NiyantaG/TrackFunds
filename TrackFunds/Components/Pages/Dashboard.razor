@@ -159,14 +159,14 @@
                     <tr>
                         <td>
                             <span style="
-                                            width: fit-content;
-                                            padding: 3px 4px;
-                                            border-radius: 5px;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            color: white;
-                                            background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
-                                    ">
+                                                width: fit-content;
+                                                padding: 3px 4px;
+                                                border-radius: 5px;
+                                                font-size: 11px;
+                                                font-weight: bold;
+                                                color: white;
+                                                background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
+                                            ">
                                 @transaction.Type
                             </span>
                         </td>
@@ -220,14 +220,14 @@
                     <tr>
                         <td>
                             <span style="
-                                                width: fit-content;
-                                                padding: 3px 4px;
-                                                border-radius: 5px;
-                                                font-size: 11px;
-                                                font-weight: bold;
-                                                color: white;
-                                                background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
-                                            ">
+                                                    width: fit-content;
+                                                    padding: 3px 4px;
+                                                    border-radius: 5px;
+                                                    font-size: 11px;
+                                                    font-weight: bold;
+                                                    color: white;
+                                                    background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
+                                                    ">
                                 @transaction.Type
                             </span>
                         </td>
@@ -298,14 +298,14 @@
                         // Status badge with color coding (red for pending, green for paid)
                         <td>
                             <span style="
-                                                width: fit-content;
-                                                padding: 3px 4px;
-                                                border-radius: 5px;
-                                                font-size: 11px;
-                                                font-weight: bold;
-                                                color: white;
-                                                background: @(transaction.DebtStatus == DebtStatus.Pending ? "red": "green")
-                                        ">
+                                                    width: fit-content;
+                                                    padding: 3px 4px;
+                                                    border-radius: 5px;
+                                                    font-size: 11px;
+                                                    font-weight: bold;
+                                                    color: white;
+                                                    background: @(transaction.DebtStatus == DebtStatus.Pending ? "red": "green")
+                                                ">
                                 @transaction.DebtStatus
                             </span>
                         </td>
