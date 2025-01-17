@@ -104,39 +104,50 @@
     </div>
 
     // Highest Debt Card - Shows the largest single debt amount
-    <div class="card text-center shadow-sm" style="width: 16rem;"> 
-         <div class="card-body"> 
-           <div class="card-title fw-bold text-warning">Highest Debt</div> 
-             <div class="card-text"> 
-                 <h1>@_curr @_highestDebt</h1> 
-             </div> 
-        </div> 
-     </div> 
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-warning">Highest Debt</div>
+            <div class="card-text">
+                <h1>@_curr @_highestDebt</h1>
+            </div>
+        </div>
+    </div>
 
     // Lowest Debt Card - Shows the smallest single debt amount
-     <div class="card text-center shadow-sm" style="width: 16rem;"> 
-         <div class="card-body"> 
-             <div class="card-title fw-bold text-muted">Lowest Debt</div> 
-             <div class="card-text"> 
-                 <h1>@_lowestDebt</h1> 
-             </div> 
-        </div> 
-     </div>
+    <div class="card text-center shadow-sm" style="width: 16rem;">
+        <div class="card-body">
+            <div class="card-title fw-bold text-muted">Lowest Debt</div>
+            <div class="card-text">
+                <h1>@_lowestDebt</h1>
+            </div>
+        </div>
+    </div>
 </section>>
 
 <section>
     <div id=" Top 5 highest transaction">
-        <br><h1>Top 5 Highest Transaction</h1>
+        <br>
+        <h1>Top 5 Highest Transaction</h1>
     </div>
 
     <table class="table">
         <thead>
             <tr>
-                <th class="align-baseline"><div>Type</div></th>
-                <th class="align-baseline"><div>Tag</div></th>
-                <th class="align-baseline"><div>Amount</div></th>
-                <th class="align-baseline"><div>Date</div></th>
-                <th class="align-baseline"><div>Note</div></th>
+                <th class="align-baseline">
+                    <div>Type</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Tag</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Amount</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Date</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Note</div>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -144,56 +155,6 @@
                 IEnumerable<Transaction> fivehighList = _topfivehigh;
 
                 foreach (var transaction in fivehighList)
-                {
-                    <tr>
-                        <td>
-                            <span style="
-                                        width: fit-content;
-                                        padding: 3px 4px;
-                                        border-radius: 5px;
-                                        font-size: 11px;
-                                        font-weight: bold;
-                                        color: white;
-                                        background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
-                            ">
-                                @transaction.Type
-                            </span>
-                        </td>
-                        <td>@transaction.Tag</td>
-                        <td>@_curr @transaction.Amount</td>
-                        <td>@transaction.Date</td>
-                        <td>@transaction.Note</td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-
-</section>
-
-
-
-
-<section>
-    <div id=" Top 5 lowest transaction">
-        <br><h1>Top 5 Lowest Transaction</h1>
-    </div>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th class="align-baseline"><div>Type</div></th>
-                <th class="align-baseline"><div>Tag</div></th>
-                <th class="align-baseline"><div>Amount</div></th>
-                <th class="align-baseline"><div>Date</div></th>
-                <th class="align-baseline"><div>Note</div></th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                IEnumerable<Transaction> fivelowList = _topfivelow;
-
-                foreach (var transaction in fivelowList)
                 {
                     <tr>
                         <td>
@@ -218,26 +179,102 @@
             }
         </tbody>
     </table>
+
 </section>
 
-    // Section header for pending debts table
+
+
+
+<section>
+    <div id=" Top 5 lowest transaction">
+        <br>
+        <h1>Top 5 Lowest Transaction</h1>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="align-baseline">
+                    <div>Type</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Tag</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Amount</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Date</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Note</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                IEnumerable<Transaction> fivelowList = _topfivelow;
+
+                foreach (var transaction in fivelowList)
+                {
+                    <tr>
+                        <td>
+                            <span style="
+                                                width: fit-content;
+                                                padding: 3px 4px;
+                                                border-radius: 5px;
+                                                font-size: 11px;
+                                                font-weight: bold;
+                                                color: white;
+                                                background: @(transaction.Type == TransactionType.Credit ? "green": transaction.Type == TransactionType.Debit ? "red" : transaction.Type == TransactionType.Debt ? "orange": "")
+                                            ">
+                                @transaction.Type
+                            </span>
+                        </td>
+                        <td>@transaction.Tag</td>
+                        <td>@_curr @transaction.Amount</td>
+                        <td>@transaction.Date</td>
+                        <td>@transaction.Note</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</section>
+
+// Section header for pending debts table
 <section>
     <div id="pending-debt-dashboard">
-        <br><h1>Pending Debts Table </h1>
+        <br>
+        <h1>Pending Debts Table </h1>
     </div>
 
     // Table to display all pending debts
     <table class="table">
-        
+
         <thead>
             <tr>
-                <th class="align-baseline"><div>Tag</div></th>
-                <th class="align-baseline"><div>Amount</div></th>
-                <th class="align-baseline"><div>Created Date</div></th>
-                <th class="align-baseline"><div>Debt Due Date</div></th>
-                <th class="align-baseline"><div>Debt Source</div></th>
-                <th class="align-baseline"><div>Debt Status</div></th>
-                <th class="align-baseline"><div>Note</div></th>
+                <th class="align-baseline">
+                    <div>Tag</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Amount</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Created Date</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Debt Due Date</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Debt Source</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Debt Status</div>
+                </th>
+                <th class="align-baseline">
+                    <div>Note</div>
+                </th>
             </tr>
         </thead>
 
@@ -261,14 +298,14 @@
                         // Status badge with color coding (red for pending, green for paid)
                         <td>
                             <span style="
-                                            width: fit-content;
-                                            padding: 3px 4px;
-                                            border-radius: 5px;
-                                            font-size: 11px;
-                                            font-weight: bold;
-                                            color: white;
-                                            background: @(transaction.DebtStatus == DebtStatus.Pending ? "red": "green")
-                                ">
+                                                width: fit-content;
+                                                padding: 3px 4px;
+                                                border-radius: 5px;
+                                                font-size: 11px;
+                                                font-weight: bold;
+                                                color: white;
+                                                background: @(transaction.DebtStatus == DebtStatus.Pending ? "red": "green")
+                                        ">
                                 @transaction.DebtStatus
                             </span>
                         </td>
@@ -287,42 +324,42 @@
     private GlobalState _globalState { get; set; }
 
     // Properties to store dashboard data
-    private double _debtAmount { get; set; }        
-    private double _totalIncome { get; set; }       
-    private double _totalExpense { get; set; }      
-    private int _totalTransactions { get; set; }    
-    private double _highestIncome { get; set; }    
-    private double _highestExpense { get; set; }    
-    private double _highestDebt { get; set; }       
-    private double _lowestIncome { get; set; }      
-    private double _lowestExpense { get; set; }     
-    private double _lowestDebt { get; set; }        
-    private string _curr { get; set; }              
-    private List<Transaction> _transactions { get; set; }  
-    private List<Transaction> _topfivehigh{get; set;}
-    private List<Transaction> _topfivelow{get; set;}
+    private double _debtAmount { get; set; }
+    private double _totalIncome { get; set; }
+    private double _totalExpense { get; set; }
+    private int _totalTransactions { get; set; }
+    private double _highestIncome { get; set; }
+    private double _highestExpense { get; set; }
+    private double _highestDebt { get; set; }
+    private double _lowestIncome { get; set; }
+    private double _lowestExpense { get; set; }
+    private double _lowestDebt { get; set; }
+    private string _curr { get; set; }
+    private List<Transaction> _transactions { get; set; }
+    private List<Transaction> _topfivehigh { get; set; }
+    private List<Transaction> _topfivelow { get; set; }
 
     // Initialize component and load data
     protected override void OnInitialized()
     {
         // Get user's currency preference
         _curr = UsersService.GetCurrency(_globalState.CurrentUser.Id);
-        
+
         // Calculate totals and statistics
         _totalIncome = TransactionService.GetTotalIncome(_globalState.CurrentUser.Id);
         _totalExpense = TransactionService.GetTotalExpense(_globalState.CurrentUser.Id);
         _debtAmount = TransactionService.GetTotalPendingDebtAmount(_globalState.CurrentUser.Id);
         _totalTransactions = TransactionService.GetTotalTransactionsCount(_globalState.CurrentUser.Id);
-        
+
         // Get highest/lowest amounts for each transaction type
         _highestIncome = TransactionService.GetHighestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Credit);
         _lowestIncome = TransactionService.GetLowestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Credit);
         _highestExpense = TransactionService.GetHighestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debit);
         _lowestExpense = TransactionService.GetLowestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debit);
-        
+
         // Get list of pending debts
         _transactions = TransactionService.GetPendingDebtList(_globalState.CurrentUser.Id, TransactionType.Debt);
-        
+
         // Get highest/lowest debt amounts
         _highestDebt = TransactionService.GetHighestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debt);
         _lowestDebt = TransactionService.GetLowestTransactionAmount(_globalState.CurrentUser.Id, TransactionType.Debt);
