@@ -243,5 +243,64 @@ namespace TrackFunds.Data.Services
 
             return pendingDebts.Count != 0 ? pendingDebts : [];
         }
+        public static List<Transaction> GetTopFiveHighestTransactionList(Guid userId, TransactionType type)
+        {
+            // Get all transactions for the user
+            List<Transaction> allTransactions = GetAll(userId);
+
+            // Filter transactions by the specified type
+            var filteredTransactions = allTransactions.Where(x => x.Type == type).ToList();
+
+            // Check if there are any transactions of the specified type
+            if (filteredTransactions.Any())
+            {
+                // Sort transactions by amount in descending order and take the top 5
+                var topFiveTransactions = filteredTransactions
+                    .OrderByDescending(x => x.Amount)
+                    .Take(5)
+                    .ToList();
+
+                // Return the top 5 transactions
+                return topFiveTransactions;
+            }
+            else
+            {
+                // If no transactions of the specified type, return an empty list
+                return [];
+            }
+        }
+
+        public static List<Transaction> GetTopFiveLowestTransactionList(Guid userId, TransactionType type)
+        {
+            // Get all transactions for the user
+            List<Transaction> allTransactions = GetAll(userId);
+
+            // Filter transactions by the specified type
+            var filteredTransactions = allTransactions.Where(x => x.Type == type).ToList();
+
+            // Check if there are any transactions of the specified type
+            if (filteredTransactions.Any())
+            {
+                // Sort transactions by amount in ascending order (lowest first) and take the top 5
+                var topFiveLowestTransactions = filteredTransactions
+                    .OrderBy(x => x.Amount)  // Ascending order (lowest first)
+                    .Take(5)
+                    .ToList();
+
+                // Return the top 5 lowest transactions
+                return topFiveLowestTransactions;
+            }
+            else
+            {
+                // If no transactions of the specified type, return an empty list
+                return new List<Transaction>();
+            }
+        }
+
+
+
+
+
+
     }
 }
