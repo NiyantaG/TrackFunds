@@ -1,18 +1,28 @@
-﻿@page "/"
+﻿<!-- Main page of Web-->
+@page "/"
+
+<!--Inject NavigationManager for handling page navigation-->
+
 @inject NavigationManager NavManager
 
+
 @code {
+    // using GlobalState as cascading parameter which contains user information
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
 
+    // This method runs when the component is first initialized
     protected override void OnInitialized()
     {
+        // Check if user is logged in by looking at CurrentUser in global state
         if (_globalState.CurrentUser == null)
         {
+            // If no user is logged in, redirect to login page
             NavManager.NavigateTo("/login");
         }
         else
         {
+            // If user is already logged in, redirect to dashboard
             NavManager.NavigateTo("/dashboard");
         }
     }

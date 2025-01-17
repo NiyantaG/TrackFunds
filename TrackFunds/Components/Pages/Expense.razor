@@ -1,6 +1,8 @@
-﻿@page "/expense"
+﻿ @page "/expense"
 
+<!--Navigation bar containing the page title-->
 <nav class="navbar navbar-light justify-content-between">
+    <!--Page title with purple gradient text effect-->
     <h1 class="navbar-brand mb-0 h1 fw-bold" style=" background: #7942CE;
         -webkit-text-fill-color: transparent;
         -webkit-background-clip: text;">
@@ -8,48 +10,66 @@
     </h1>
 </nav>
 
+<!--Table to display all expense transactions-->
 <table class="table">
+    
     <thead>
         <tr>
-            <th class="align-baseline"><div>Tag</div></th>
-            <th class="align-baseline"><div>Amount</div></th>
-            <th class="align-baseline"><div>Date</div></th>
-            <th class="align-baseline"><div>Note</div></th>
+            <!--Column headers for expense information-->
+            <th class="align-baseline">
+                <div>Tag</div>
+            </th> 
+            <th class="align-baseline">
+                <div>Amount</div>
+            </th> 
+            <th class="align-baseline">
+                <div>Date</div>
+            </th> 
+            <th class="align-baseline">
+                <div>Note</div>
+            </th> 
         </tr>
     </thead>
+
+    <!--Table body containing expense records-->
     <tbody>
         @{
+            // Get all transactions and sort them by date (newest first)
             IEnumerable<Transaction> transactionList = _transactions;
             transactionList = transactionList.OrderByDescending(t =>
             t.Date);
 
+            // Loop through each transaction and display its details
             foreach (var transaction in transactionList)
             {
                 <tr>
-                    <td>@transaction.Tag</td>
-                    <td>@transaction.Amount</td>
-                    <td>@transaction.Date</td>
-                    <td>@transaction.Note</td>
+                    <td>@transaction.Tag</td> // Display expense category
+                    <td>@transaction.Amount</td> // Display amount spent
+                    <td>@transaction.Date</td> // Display transaction date
+                    <td>@transaction.Note</td> // Display any additional notes
                 </tr>
             }
         }
     </tbody>
 </table>
 
+<!--Code section containing component logic-->
 @code {
-    @code {
-        [CascadingParameter]
-        private GlobalState _globalState { get; set; }
-        private double _debtAmount { get; set; }
-        private string _curr { get; set; }
-        private List<Transaction> _transactions { get; set; }
+    // Get the global state (user information) from the cascading parameter
+    [CascadingParameter]
+    private GlobalState _globalState { get; set; }
 
-        protected override void OnInitialized()
-        {
-            _transactions = TransactionService.GetTransactionType(_globalState.CurrentUser.Id, TransactionType.Debit);
-            _curr = UsersService.GetCurrency(_globalState.CurrentUser.Id);
-        }
-     
+    // Properties to store expense-related data
+    private double _debtAmount { get; set; } // Not used in this page, can be removed
+    private string _curr { get; set; } // Currency symbol for the user
+    private List<Transaction> _transactions { get; set; } // List of all expense transactions
 
+    // Initialize component and load data when page loads
+    protected override void OnInitialized()
+    {
+        // Get all transactions of type 'Debit' (expenses) for the current user
+        _transactions = TransactionService.GetTransactionType(_globalState.CurrentUser.Id, TransactionType.Debit);
+        // Get user's preferred currency
+        _curr = UsersService.GetCurrency(_globalState.CurrentUser.Id);
     }
 }

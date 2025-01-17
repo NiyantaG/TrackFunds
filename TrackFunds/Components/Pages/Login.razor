@@ -1,69 +1,112 @@
-﻿@page "/login"
+﻿// Defines the login page route
+@page "/login"
+
+<!--Inject NavigationManager for page redirections -->
 @inject NavigationManager NavManager
 
+
 <div class="main-container" style="background:#7942CE ">
+    <!--Login form container-->
     <div class="form-login" style="background:#7942CE ">
+    <!--Login form with submit handler-->
         <form class="text-center" style="background:#7942CE " @onsubmit="LoginHandler">
-            <img class="mb-4" src="/appicon.png" alt="" >
-            <h1 class="h3 mb-3 fw-bold" style=" background:#7942CE;
-        -webkit-text-fill-color: black;
-        -webkit-background-clip: text;">
+           
+            
+            <!--App title-->
+            <h1 class="h3 mb-3 fw-bold" style="background:#7942CE;
+                -webkit-text-fill-color: black;
+                -webkit-background-clip: text;">
                 TRACKFUNDS
-                @* #7942CE *@
             </h1>
 
+            <!--Username input field-->
             <div class="form-floating">
-                <input type="text" class="form-control username" style="background:#7942CE " @bind="_username" placeholder="Username" />
+                <input type="text" 
+                       class="form-control username" 
+                       style="background:#7942CE " 
+                       @bind="_username" 
+                       placeholder="Username" />
                 <label for="floatingInput">Username</label>
             </div>
+
+            <!--Password input field-->
             <div class="form-floating mb-3" >
-                <input type="password" class="form-control password" style="background:#7942CE " @bind="_password" placeholder="Password" />
+                <input type="password" 
+                       class="form-control password" 
+                       style="background:#7942CE " 
+                       @bind="_password" 
+                       placeholder="Password" />
                 <label for="floatingPassword">Password</label>
             </div>
+
+            <!--Currency preference dropdown-->
             <div class="mb-3" >
                 <label for="moneyPreferences">Money Preference</label>
-                <select class="form-select"   aria-label="moneyPreferences" @bind="_moneyPreference">
+                <select class="form-select" 
+                        aria-label="moneyPreferences" 
+                        @bind="_moneyPreference">
                     <option value="@MoneyPreference.Rupees">Rupees</option>                       
                     <option value="@MoneyPreference.Dollar">USD</option>                       
                     <option value="@MoneyPreference.Pound">Pound</option>                       
                 </select>
             </div>
+
+            <!--Error message display-->
             @if (!string.IsNullOrEmpty(_errorMessage))
             {
                 <AlertMessage Type="danger" Message="@_errorMessage" />
             }
-            <button class="w-100 btn btn-lg btn-primary" style="background:#ffffff " type="submit">
-                <span class="oi oi-account-login" style="margin-right:10px;
-                      -webkit-text-fill-color: black
-                      ;"> Login
-                  </span> 
+
+            <!--Login button-->
+            <button class="w-100 btn btn-lg btn-primary" 
+                    style="background:#ffffff " 
+                    type="submit">
+                <span class="oi oi-account-login" 
+                      style="margin-right:10px; -webkit-text-fill-color: black;">
+                    Login
+                </span> 
             </button>
         </form>
     </div>
 </div>
 
 @code {
+    // Global state for user information
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
-    private bool _showDefaultCredentials { get; set; }
-    private string _username { get; set; }
-    private string _password { get; set; }
-    private MoneyPreference _moneyPreference { get; set; }
-    private string _errorMessage = "Please fill up the fields";
 
+    // Properties for form data and state
+    private bool _showDefaultCredentials { get; set; }    
+    private string _username { get; set; }                
+    private string _password { get; set; }               
+    private MoneyPreference _moneyPreference { get; set; }/
+    private string _errorMessage = ""; 
+
+    // Initialization method
     protected override void OnInitialized()
     {                    
+        // Clear current user on login page load
         _globalState.CurrentUser = null;     
-   
+        // Clear any error messages
         _errorMessage = "";
     }
 
+    // Handle login form submission
     private void LoginHandler()
     {
         try
         {
+            // Clear any previous error messages
             _errorMessage = "";
-            _globalState.CurrentUser = UsersService.Login(_username, _password, _moneyPreference);
+            
+            // Attempt to log in using provided credentials
+            _globalState.CurrentUser = UsersService.Login(
+                _username, 
+                _password, 
+                _moneyPreference
+            );
+
+            // If login successful, redirect to dashboard
             if (_globalState.CurrentUser != null)
             {
                 NavManager.NavigateTo("/dashboard");
@@ -71,9 +114,9 @@
         }
         catch (Exception e)
         {
+            // Display any login errors
             _errorMessage = e.Message;
             Console.WriteLine(e);
         }
     }
-
 }

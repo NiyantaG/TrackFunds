@@ -8,11 +8,11 @@ namespace TrackFunds.Data.Models
         public double Amount { get; set; }
         public TransactionType Type { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
-        public string? Note { get; set; }
+        public string? Note { get; set; }//Optional
         public string Tag { get; set; }
-        public string? DebtSource { get; set; }
-        public DateTime? DebtDueDate { get; set; }
-        public DebtStatus? DebtStatus { get; set; }
+        public string? DebtSource { get; set; } // Optional
+        public DateTime? DebtDueDate { get; set; } // Optional
+        public DebtStatus? DebtStatus { get; set; } //Optional
         public Guid UserId { get; set; }
     }
 }

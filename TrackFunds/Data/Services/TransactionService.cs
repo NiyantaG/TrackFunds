@@ -9,20 +9,24 @@ namespace TrackFunds.Data.Services
 {
     public class TransactionService
     {
+        // Saves all transactions to a JSON file for a specific user
         private static void SaveAll(List<Transaction> transactions, Guid userId)
         {
             string appDataDirectoryPath = Utils.GetAppDirectoryPath();
             string transactionsFilePath = Utils.GetUserTransactionsFilePath(userId);
 
+            // Create directory if it doesn't exist
             if (!Directory.Exists(appDataDirectoryPath))
             {
                 Directory.CreateDirectory(appDataDirectoryPath);
             }
 
+            // Serialize and save transactions to file
             var json = JsonSerializer.Serialize(transactions);
             File.WriteAllText(transactionsFilePath, json);
         }
 
+        // Retrieves all transactions for a specific user
         public static List<Transaction> GetAll(Guid userId)
         {
             string transactionsFilePath = Utils.GetUserTransactionsFilePath(userId);
@@ -32,20 +36,24 @@ namespace TrackFunds.Data.Services
             }
 
             var json = File.ReadAllText(transactionsFilePath);
-
             return JsonSerializer.Deserialize<List<Transaction>>(json);
         }
 
-        public static Tuple<List<Transaction>, User> Create(Guid userId, double amount, TransactionType type, string note, string tag, string? debtSource, DateTime? debtDueDate)
+        // Creates a new transaction and updates user balance
+        public static Tuple<List<Transaction>, User> Create(Guid userId, double amount, TransactionType type,
+            string note, string tag, string? debtSource, DateTime? debtDueDate)
         {
             List<Transaction> transactions = GetAll(userId);
             List<User> users = UsersService.GetAll();
             var user = users.FirstOrDefault(x => x.Id == userId);
+
+            // Validate user exists
             if (user == null)
             {
                 throw new Exception("User not found.");
             }
 
+            // Check sufficient balance for debit transactions
             if (type == TransactionType.Debit)
             {
                 if (user.BalanceAmount < amount)
@@ -54,6 +62,7 @@ namespace TrackFunds.Data.Services
                 }
             }
 
+            // Create and add new transaction
             transactions.Add(new Transaction
             {
                 Amount = amount,
@@ -68,18 +77,14 @@ namespace TrackFunds.Data.Services
 
             SaveAll(transactions, userId);
 
+            // Update user balance based on transaction type
             if (type == TransactionType.Credit)
             {
                 user.BalanceAmount += amount;
-            }
-            else if (type == TransactionType.Debit)
-            {
-                user.BalanceAmount -= amount;
-            }
-            UsersService.SaveAll(users);
-            if (type == TransactionType.Credit)
-            {
-                var clearableDebts = GetTransactionType(userId, TransactionType.Debt).Where(x => x.DebtStatus == DebtStatus.Pending).Where(x => x.Amount < user.BalanceAmount);
+                // Check and clear any pending debts that can be paid
+                var clearableDebts = GetTransactionType(userId, TransactionType.Debt)
+                    .Where(x => x.DebtStatus == DebtStatus.Pending && x.Amount < user.BalanceAmount);
+
                 if (clearableDebts.Count() > 0)
                 {
                     foreach (var debt in clearableDebts)
@@ -90,15 +95,23 @@ namespace TrackFunds.Data.Services
                 }
                 transactions = GetAll(userId);
             }
+            else if (type == TransactionType.Debit)
+            {
+                user.BalanceAmount -= amount;
+            }
+
+            UsersService.SaveAll(users);
             return (transactions, user).ToTuple();
         }
 
+        // Gets transactions of a specific type
         public static List<Transaction> GetTransactionType(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
             return transactions.Where(x => x.Type == type).ToList();
         }
 
+        // Clears a pending debt by creating a debit transaction
         public static Tuple<List<Transaction>, User> ClearDebt(Guid userId, Guid debtId)
         {
             try
@@ -107,6 +120,8 @@ namespace TrackFunds.Data.Services
                 List<User> users = UsersService.GetAll();
                 User user = users.FirstOrDefault(x => x.Id == userId);
                 Transaction debt = transactions.FirstOrDefault(x => x.Id == debtId);
+
+                // Validate debt exists and can be cleared
                 if (debt == null)
                 {
                     throw new Exception("Debt not found.");
@@ -119,11 +134,16 @@ namespace TrackFunds.Data.Services
                 {
                     throw new Exception("Insufficient balance.");
                 }
-                var result = Create(userId, debt.Amount, TransactionType.Debit, "Debt payment", "Debt", debt.DebtSource, debt.DebtDueDate);
+
+                // Create debit transaction for debt payment
+                var result = Create(userId, debt.Amount, TransactionType.Debit,
+                    "Debt payment", "Debt", debt.DebtSource, debt.DebtDueDate);
+
                 transactions = result.Item1;
                 Transaction currDebt = transactions.FirstOrDefault(x => x.Id == debtId);
                 currDebt.DebtStatus = DebtStatus.Paid;
                 user.BalanceAmount = result.Item2.BalanceAmount;
+
                 UsersService.SaveAll(users);
                 SaveAll(transactions, userId);
                 return (transactions, user).ToTuple();
@@ -134,86 +154,64 @@ namespace TrackFunds.Data.Services
             }
         }
 
+        // Calculates total pending debt amount
         public static double GetTotalPendingDebtAmount(Guid userId)
         {
             List<Transaction> transactions = GetAll(userId);
-            return transactions.Where(x => x.Type == TransactionType.Debt && x.DebtStatus == DebtStatus.Pending).Sum(x => x.Amount);
+            return transactions.Where(x => x.Type == TransactionType.Debt &&
+                   x.DebtStatus == DebtStatus.Pending).Sum(x => x.Amount);
         }
 
+        // Gets total income (credit transactions)
         public static double GetTotalIncome(Guid userId)
         {
             List<Transaction> transactions = GetAll(userId);
             return transactions.Where(x => x.Type == TransactionType.Credit).Sum(x => x.Amount);
         }
 
+        // Gets total expenses (debit transactions)
         public static double GetTotalExpense(Guid userId)
         {
             List<Transaction> transactions = GetAll(userId);
             return transactions.Where(x => x.Type == TransactionType.Debit).Sum(x => x.Amount);
         }
 
+        // Gets total number of transactions
         public static int GetTotalTransactionsCount(Guid userId)
         {
             List<Transaction> transactions = GetAll(userId);
             return transactions.Count;
         }
+
+        // Gets highest transaction amount of a specific type
         public static double GetHighestTransactionAmount(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
-
-            // Filter transactions by type
             var filteredTransactions = transactions.Where(x => x.Type == type).ToList();
-
-            // Check if there are any transactions of the specified type
-            if (filteredTransactions.Any())
-            {
-                // Return the maximum amount
-                return filteredTransactions.Max(x => x.Amount);
-            }
-            else
-            {
-                // Return 0.0 if no transactions of the specified type
-                return 0.0;
-            }
+            return filteredTransactions.Any() ? filteredTransactions.Max(x => x.Amount) : 0.0;
         }
+
+        // Gets lowest transaction amount of a specific type
         public static double GetLowestTransactionAmount(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
-
-            // Filter transactions by type
             var filteredTransactions = transactions.Where(x => x.Type == type).ToList();
-
-            // Check if there are any transactions of the specified type
-            if (filteredTransactions.Any())
-            {
-                // Return the minimum amount
-                return filteredTransactions.Min(x => x.Amount);
-            }
-            else
-            {
-                // Return 0.0 if no transactions of the specified type
-                return 0.0;
-            }
+            return filteredTransactions.Any() ? filteredTransactions.Min(x => x.Amount) : 0.0;
         }
 
-
-
+        // Gets transactions within a date range
         public static List<Transaction> GetFilteredTransactions(Guid userId, DateTime startDate, DateTime endDate)
         {
             List<Transaction> transactions = GetAll(userId);
-            var filteredTransactions = new List<Transaction>();
+
             if (startDate == endDate)
             {
-                filteredTransactions = transactions.Where(x => x.Date == startDate).ToList();
+                return transactions.Where(x => x.Date == startDate).ToList();
             }
-            else
-            {
-                filteredTransactions = transactions.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
-            }
-
-            return filteredTransactions;
+            return transactions.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
         }
 
+        // Searches transactions by tag
         public static List<Transaction> Search(Guid userId, string searchQuery)
         {
             List<Transaction> transactions = GetAll(userId);
@@ -224,10 +222,10 @@ namespace TrackFunds.Data.Services
 
             try
             {
-                var search = transactions
-                    .Where(x => x.Tag != null && x.Tag.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                return transactions
+                    .Where(x => x.Tag != null &&
+                           x.Tag.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
                     .ToList();
-                return search;
             }
             catch (Exception ex)
             {
@@ -235,25 +233,15 @@ namespace TrackFunds.Data.Services
             }
         }
 
+        // Gets list of pending debts
         public static List<Transaction> GetPendingDebtList(Guid userId, TransactionType type)
         {
             List<Transaction> transactions = GetAll(userId);
+            var pendingDebts = GetTransactionType(userId, TransactionType.Debt)
+                .Where(x => x.DebtStatus == DebtStatus.Pending)
+                .ToList();
 
-            
-
-            var pendingDebts = GetTransactionType(userId, TransactionType.Debt).Where(x => x.DebtStatus == DebtStatus.Pending).ToList(); ;
-            if (pendingDebts.Count != 0)
-            {
-                return pendingDebts;
-
-
-            }
-            else
-            {
-                return [];
-            }
-
+            return pendingDebts.Count != 0 ? pendingDebts : [];
         }
     }
-
 }
